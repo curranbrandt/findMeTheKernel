@@ -1,6 +1,6 @@
 # Hello
 
-I'm going to start learning about kernel modules, and a simple module that prints "hello world" and "goodbye" when loaded/unloaded is a good place to start.
+I'm beginning to learn about kernel modules. I have written a simple module that prints "hello world" and "goodbye" when loaded/unloaded.
 
 ### Specs
 ```
@@ -120,4 +120,10 @@ sudo rmmod hello.ko
 ```
 
 :)
+
+
+### Resources:
+[Hello World](https://tldp.org/LDP/lkmpg/2.6/html/x121.html)
+
+[printk](https://www.kernel.org/doc/html/next/core-api/printk-basics.html)
 

@@ -3,18 +3,22 @@
 
 
 /* Why THIS won't work... 
-static int cnt = 3;
-static int cnt_arr[cnt]  = {1, 2, 3};
+static int sz = 3;
+static int count_arr[sz]  = {1, 2, 3};
 C does NOT allow variable-length arrays at file scope...
- static means cnt_arry is at file scope...
- since it is of length cnt...
- 	cnt is static, meaning it is at file scope 
+ static means count_arry is at file scope...
+ since it is of length sz...
+ 	sz is static, meaning it is at file scope 
  	BUT also means that its value can change throughout the program...
+	--> therefore, since 'sz' can change, size of count_arr can change as well...
+	--> don't want this... want sz to be a const...
 */
 // Do THIS instead...
-#define MAX_CNT 100
-static int cnt_arr[MAX_CNT]  = {1, 2, 3};
-static int cnt = 0;
+#define MAX_COUNT 100
+static int i = 0;
+// size of count_arr will either be 0, if no args are passed, or length of array, to be stored in count...
+static int count;
+static int count_arr[MAX_COUNT]  = {1, 2, 3};
 
 static char* dn = "";
 static char* name = "Misa";
@@ -24,14 +28,15 @@ static char* alph_arr = "abcdefghijklmnopqrstuvwxyz";
 static int hello_init(void){
 	printk(KERN_EMERG "Hello %s!\n", name);
 	printk(KERN_EMERG "So there's another %s!?\n", dn);
-	int i = 0;
+	int a = 0;
 	printk(KERN_EMERG "I can count...\n");
-	// use cnt, which is either 0, or length of cnt_arr provided by user,
-	// 	in order to iterate through cnt_arr and arr
-	while (i < cnt){
-	printk(KERN_EMERG " %d ", cnt_arr[i]);
-	printk(KERN_EMERG " %c ", alph_arr[i]);
-		i = i + 1;
+	printk(KERN_EMERG " count is %d ", count);
+	printk(KERN_EMERG " i is %d ", i);
+	// use a to iterate through array, up to *_arr[i] --> which is either 0 or value provided by user
+	while (a < i){
+		printk(KERN_EMERG " %d ", count_arr[a]);
+		printk(KERN_EMERG " %c ", alph_arr[a]);
+		a = a + 1;
 	}
 	return 0;
 }
@@ -74,9 +79,14 @@ module_param(alph_arr, charp, 0);
  * of elements of the array initialized by the user at module loading time
  * The fourth argument is the permission bits
  */
+// tell kernel ab count_arr param... :)
+// size of said array will either be 0, if no args are passed, or length of array, to be stored in count...
+module_param_array(count_arr, int, &count, 0);
+MODULE_PARM_DESC(count_arr, "int array for 123");
 
-module_param_array(cnt_arr, int, &cnt, 0);
-MODULE_PARM_DESC(cnt_arr, "int array for 123");
+// let's also tell kernel ab count param, so that user can specify "count" as a parameter, and optionally print out 1,2,3,NULL....NULL to the kernel...
+MODULE_PARM_DESC(i, "number of values from count_arr[] and alph_arr[] that we want to print to the kernel");
+module_param(i, int, 0);
 
 // tell kernel ab dn param
 MODULE_PARM_DESC(dn, "string passed via 'dn=<value' when inserting kernel module... ie. insmod hello_params.ko dn='bundt cake'");
